@@ -1,17 +1,20 @@
 <template>
     <div id="app">
-        <ChatApp /><!-- 引入您的 ChatApp 組件 -->
+        <router-view />
+        <ChatApp />
     </div>
 </template>
 
 <script>
     import ChatApp from './components/ChatApp.vue'
+    import Login from './components/Login.vue'
     //import HelloWorld from './components/HelloWorld.vue'
 
 export default {
-  name: 'App',
-  components: {
-      ChatApp //註冊 ChatApp 組件
-  }
+        name: 'App',
+        components: {
+            ChatApp,
+            Login
+        }
 }
 </script>

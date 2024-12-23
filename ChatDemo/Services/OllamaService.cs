@@ -1,27 +1,35 @@
 ﻿using OllamaSharp;
 using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 
-namespace ChatDemo.Service
+namespace ChatDemo.Services
 {
     public class QuestionAnswerService
     {
         private readonly string _ollamaBaseUrl;
         private readonly string _model;
 
-        public QuestionAnswerService()
+        public QuestionAnswerService(IConfiguration configuration)
         {
-            _ollamaBaseUrl = "http://localhost:11434"; // Ollama 服务地址
-            _model = "llama3.2:latest"; // 使用的模型
+            var ollamaSettings = configuration.GetSection("OllamaSettings");
+            _ollamaBaseUrl = ollamaSettings["BaseUrl"];
+            _model = ollamaSettings["Model"];
         }
 
         public async Task<string> GetAnswerAsync(string prompt)
         {
+            if (string.IsNullOrWhiteSpace(prompt))
+            {
+                return "輸入提示不能為空。";
+            }
+
             var ollama = new OllamaApiClient(_ollamaBaseUrl)
             {
                 SelectedModel = _model
             };
             var chat = new Chat(ollama);
+
             try
             {
                 var responseStream = chat.SendAsync(prompt);
@@ -29,14 +37,19 @@ namespace ChatDemo.Service
 
                 await foreach (var response in responseStream)
                 {
-                    fullResponse += response;
+                    if (!string.IsNullOrEmpty(response))
+                    {
+                        fullResponse += response.Trim();
+                    }
                 }
 
                 return fullResponse;
             }
             catch (Exception ex)
             {
-                return $"錯誤: {ex.Message}";
+                // 記錄異常 (可替換為 ILogger)
+                Console.WriteLine($"發生錯誤: {ex}");
+                return "伺服器內部錯誤，請稍後再試。";
             }
         }
     }

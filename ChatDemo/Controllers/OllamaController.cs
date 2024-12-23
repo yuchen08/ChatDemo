@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using ChatDemo.Service;
+using ChatDemo.Services;
 
 namespace ChatDemo.Controllers
 {
@@ -7,20 +7,30 @@ namespace ChatDemo.Controllers
     [ApiController]
     public class OllamaController : ControllerBase
     {
-        [HttpGet("{question}")]
-        public async Task<ActionResult<string>> GetById(string question)
+        private readonly QuestionAnswerService _ollamaService;
+
+        public OllamaController(QuestionAnswerService ollamaService)
         {
+            _ollamaService = ollamaService;
+        }
+
+        [HttpGet("question/{question}")]
+        public async Task<ActionResult<string>> GetAnswer(string question)
+        {
+            if (string.IsNullOrWhiteSpace(question))
+            {
+                return BadRequest("問題內容不能為空");
+            }
+
             try
             {
-                // 確保這裡沒有導致無窮請求的邏輯
-                QuestionAnswerService OllamaService = new QuestionAnswerService();
-                var answer = await OllamaService.GetAnswerAsync(question);
+                var answer = await _ollamaService.GetAnswerAsync(question);
                 return Ok(answer);
             }
             catch (Exception ex)
             {
-                // 返回錯誤訊息
-                return BadRequest($"出錯了: {ex.Message}");
+                // Log the exception for debugging purposes (e.g., using ILogger)
+                return StatusCode(500, "伺服器內部錯誤，請稍後再試。");
             }
         }
     }
