@@ -9,9 +9,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="chatapp\src\NewFolder\**" />
     <Compile Remove="ClientApp\**" />
+    <Content Remove="chatapp\src\NewFolder\**" />
     <Content Remove="ClientApp\**" />
+    <EmbeddedResource Remove="chatapp\src\NewFolder\**" />
     <EmbeddedResource Remove="ClientApp\**" />
+    <None Remove="chatapp\src\NewFolder\**" />
     <None Remove="ClientApp\**" />
   </ItemGroup>
 

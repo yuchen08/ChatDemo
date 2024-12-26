@@ -1,4 +1,5 @@
 import { createApp } from 'vue';
+import { createPinia } from 'pinia'
 import App from './App.vue';
 import axios from 'axios';
 import './index.css';//TailWind
@@ -7,6 +8,7 @@ import router from './router';
 // 創建 Vue 實例並設置全局 axios 配置
 const app = createApp(App)
     .use(router)  // 使用路由
+    .use(createPinia())
     .mount('#app');
 
 // 設置 axios 全局配置，例如設置 baseURL 和 headers

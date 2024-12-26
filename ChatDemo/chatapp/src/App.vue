@@ -1,7 +1,6 @@
 <template>
     <div id="app">
         <router-view />
-        <ChatApp />
     </div>
 </template>
 
@@ -12,9 +11,5 @@
 
 export default {
         name: 'App',
-        components: {
-            ChatApp,
-            Login
-        }
 }
 </script>

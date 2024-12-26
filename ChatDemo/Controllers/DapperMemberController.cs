@@ -15,36 +15,39 @@ namespace ChatDemo.Controllers
             _memberService = memberService;
         }
 
+        // 註冊功能
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] Member member)
         {
+            // 檢查用戶名是否已存在
             if (await _memberService.UsernameExistsAsync(member.Username))
             {
-                return BadRequest("Username already exists.");
+                return BadRequest("用戶名已存在。");
             }
 
-            // Hash 密碼
+            // 雜湊密碼
             member.Password = BCrypt.Net.BCrypt.HashPassword(member.Password);
             var result = await _memberService.RegisterAsync(member);
 
             if (!result)
             {
-                return StatusCode(500, "Failed to register member.");
+                return StatusCode(500, "註冊失敗，請稍後再試。");
             }
 
-            return Ok("Member registered successfully.");
+            return Ok("會員註冊成功。");
         }
 
+        // 登入功能
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromQuery] string username, [FromQuery] string password)
+        public async Task<IActionResult> Login([FromBody] Member member)
         {
-            var member = await _memberService.LoginAsync(username, password);
-            if (member == null)
+            var members = await _memberService.LoginAsync(member.Username, member.Password);
+            if (members == null)
             {
-                return Unauthorized("Invalid username or password.");
+                return Unauthorized(new { success = false, message = "用戶名或密碼不正確。" });
             }
 
-            return Ok("Login successful.");
+            return Ok(new { success = true, message = "登入成功。" });
         }
     }
 }

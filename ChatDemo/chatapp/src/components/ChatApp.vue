@@ -9,10 +9,13 @@
             <h1 class="text-4xl font-semibold text-center text-primary">聊天機器人</h1>
         </div>
 
-        <!-- 登出按鈕 -->
-        <button @click="logout" class="bg-red-500 text-white rounded-lg py-2 px-4 w-full sm:w-auto hover:bg-red-600 transition duration-300 transform hover:scale-105 active:scale-95 shadow-lg mt-4">
-            登出
-        </button>
+        <!-- 登出按鈕與歡迎字串 -->
+        <div class="flex items-center space-x-4 mt-4">
+            <span class="text-lg font-medium text-gray-700">會員您好！</span>
+            <button @click="logout" class="bg-red-500 text-white rounded-lg py-2 px-4 hover:bg-red-600 transition duration-300 transform hover:scale-105 active:scale-95 shadow-lg">
+                登出
+            </button>
+        </div>
 
         <!-- 提問區域 -->
         <div class="chat-section mt-8 p-6 bg-white rounded-lg shadow-lg w-full sm:max-w-md md:max-w-lg">
@@ -53,44 +56,37 @@
             </div>
         </div>
     </div>
-
-    <!-- 未登入時顯示提示內容 -->
-    <div v-else>
-        <h2 class="text-2xl text-center mt-8">請先登入以進入聊天應用</h2>
-        <router-link to="/login" class="block text-center text-blue-500">前往登入頁面</router-link>
-    </div>
 </template>
 
 <script setup>
     import { ref, onMounted } from 'vue';
     import { useRouter } from 'vue-router';
     import backgroundImage from '@/assets/background.gif';
+    import axios from 'axios';
+    import { useUserStore } from '@/stores/user';
 
-    // 變數
-    const isLoggedIn = ref(false);  // 記錄登入狀態
-    const question = ref('');  // 用戶問題
-    const answer = ref('');  // 回答
-    const error = ref(null);  // 錯誤訊息
-    const loading = ref(false);  // 載入狀態
+    const isLoggedIn = ref(false);
+    const question = ref('');
+    const answer = ref('');
+    const error = ref(null);
+    const loading = ref(false);
     const router = useRouter();
+    const userStore = useUserStore();
 
     // 檢查登入狀態
     onMounted(() => {
-        if (localStorage.getItem('token')) {
-            isLoggedIn.value = true;  // 若有 token 設定為已登入
+        if (userStore.loggedIn) {
+            isLoggedIn.value = true;
         } else {
-            isLoggedIn.value = false;
+            router.push('/login'); // 未登入直接跳轉到登入頁面
         }
     });
 
-    // 登出函式
     const logout = () => {
-        localStorage.removeItem('token');  // 清除 token
-        isLoggedIn.value = false;  // 設定登入狀態為未登入
-        router.push('/login');  // 跳轉到登入頁面
+        userStore.logout();
+        router.push('/login');
     };
 
-    // 提交問題的函式
     const askQuestion = async () => {
         if (!question.value.trim()) {
             error.value = '問題不能為空！';
@@ -100,7 +96,7 @@
         loading.value = true;
 
         try {
-            const response = await axios.get(`http://localhost:5006/api/ollama/${question.value}`);
+            const response = await axios.get(`http://localhost:5006/api/ollama/question/${question.value}`);
             answer.value = response.data;
         } catch (err) {
             error.value = '無法獲得答案，請稍後再試。' + err;
@@ -109,19 +105,3 @@
         }
     };
 </script>
-
-<style scoped>
-    @keyframes fadeIn {
-        0% {
-            opacity: 0;
-        }
-
-        100% {
-            opacity: 1;
-        }
-    }
-
-    .loading {
-        animation: fadeIn 0.5s ease-in-out;
-    }
-</style>
