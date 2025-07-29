@@ -45,7 +45,7 @@ const router = useRouter();
 // 註冊用戶函式
 const registerUser = async () => {
   try {
-      const response = await axios.post('http://localhost:5006/api/DapperMember/register', {
+      const response = await axios.post('http://localhost:5006/api/Member/register', {
       Username: username.value,
       Email: email.value,
       Password: password.value
@@ -54,8 +54,7 @@ const registerUser = async () => {
     router.push('/login'); // 跳轉到登入頁面
   } catch (error) {
     console.error(error);
-    alert('註冊失敗，請稍後再試');
-  }
+    alert(error.response?.data?.message || '註冊失敗，請稍後再試')  }
 };
 </script>
 

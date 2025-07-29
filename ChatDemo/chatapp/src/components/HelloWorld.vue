@@ -30,13 +30,13 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'HelloWorld',
-  props: {
-    msg: String
-  }
-}
+<script setup>
+// 使用 defineProps 來定義父元件傳入的 props
+// 這裡 msg 是一個字串，會顯示在頁面標題
+const props = defineProps({
+  msg: String
+});
+// 你也可以直接用 defineProps<{ msg: string }>() 來支援 TypeScript 型別
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

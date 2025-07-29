@@ -11,7 +11,7 @@
 
         <!-- 登出按鈕與歡迎字串 -->
         <div class="flex items-center space-x-4 mt-4">
-            <span class="text-lg font-medium text-gray-700">會員您好！</span>
+            <span class="text-lg font-medium text-gray-700">{{ userStore.username }} 您好！</span>
             <button @click="logout" class="bg-red-500 text-white rounded-lg py-2 px-4 hover:bg-red-600 transition duration-300 transform hover:scale-105 active:scale-95 shadow-lg">
                 登出
             </button>
@@ -97,7 +97,7 @@
 
         try {
             const response = await axios.get(`http://localhost:5006/api/ollama/question/${question.value}`);
-            answer.value = response.data;
+            answer.value = response.data.data;
         } catch (err) {
             error.value = '無法獲得答案，請稍後再試。' + err;
         } finally {
